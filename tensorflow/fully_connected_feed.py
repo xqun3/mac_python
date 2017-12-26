@@ -69,8 +69,7 @@ def fill_feed_dict(data_set, images_pl, labels_pl):
   """
   # Create the feed_dict for the placeholders filled with the next
   # `batch size` examples.
-  images_feed, labels_feed = data_set.next_batch(FLAGS.batch_size,
-                                                 FLAGS.fake_data)
+  images_feed, labels_feed = data_set.next_batch(100)
   feed_dict = {
       images_pl: images_feed,
       labels_pl: labels_feed,
@@ -94,8 +93,8 @@ def do_eval(sess,
   """
   # And run one epoch of eval.
   true_count = 0  # Counts the number of correct predictions.
-  steps_per_epoch = data_set.num_examples // FLAGS.batch_size
-  num_examples = steps_per_epoch * FLAGS.batch_size
+  steps_per_epoch = data_set.num_examples // 100
+  num_examples = steps_per_epoch * 100
   for step in xrange(steps_per_epoch):
     feed_dict = fill_feed_dict(data_set,
                                images_placeholder,
@@ -214,6 +213,27 @@ def main(_):
   tf.gfile.MakeDirs(FLAGS.log_dir)
   run_training()
 
+  # sess=tf.Session() 
+  # saver = tf.train.import_meta_graph('/tmp/tensorflow/mnist/logs/fully_connected_feed/model.ckpt-1999.meta')
+  # saver.restore(sess,tf.train.latest_checkpoint('/tmp/tensorflow/mnist/logs/fully_connected_feed/'))
+
+  # data_sets = input_data.read_data_sets('/Users/dongxq/MNIST_data')
+
+  # graph = tf.get_default_graph()
+
+  # images_placeholder, labels_placeholder = placeholder_inputs(100)
+  # logits = mnist.inference(images_placeholder,128,32)
+  # # Add to the Graph the Ops for loss calculation.
+  # loss = mnist.loss(logits, labels_placeholder)
+
+  # # Add to the Graph the Ops that calculate and apply gradients.
+  # train_op = mnist.training(loss, 0.01)
+
+  # # Add the Op to compare the logits to the labels during evaluation.
+  # eval_correct = mnist.evaluation(logits, labels_placeholder)
+
+  # do_eval(sess,eval_correct, images_placeholder,labels_placeholder,data_sets.validation,FLAGS.batch_size)
+
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -251,7 +271,7 @@ if __name__ == '__main__':
       '--input_data_dir',
       type=str,
       default=os.path.join(os.getenv('TEST_TMPDIR', '/tmp'),
-                           'tensorflow/mnist/input_data'),
+                           '/Users/dongxq/MNIST_data'),
       help='Directory to put the input data.'
   )
   parser.add_argument(

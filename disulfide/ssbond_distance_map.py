@@ -75,7 +75,7 @@ if __name__ == '__main__':
 	args = sys.argv[1:]
 	filename = args[0]
 	name = args[0].split('/')[-1].split('.')[0]
-	root_path = '/Users/dongxq/Desktop/disulfide/other_set_map/'
+	root_path = '/Users/dongxq/Desktop/disulfide/new-nossbond-map/'
 	ssbonds_map = np.load(root_path + name + '.npy')
 	ssbonds_distance_map = convert_to_nxn_map(ssbonds_map)
 	print(len(ssbonds_distance_map))

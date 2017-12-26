@@ -84,6 +84,7 @@ def run_training():
 		logits = fnn.inference(images,
 		                         FLAGS.hidden1,
 		                         FLAGS.hidden2)
+
 		out=tf.nn.softmax(logits=logits)
 
 		# Add to the Graph the loss calculation.
@@ -171,9 +172,35 @@ def run_training():
 					# print(out_)
 					id_ord = np.load(FLAGS.Validation_ord_path)
 					for outi in range(len(out_)):
-						if(out_[outi][1] > out_[outi][0]):
+						# print(id_ord[outi],out_[outi])
+						if(out_[outi][1] > 0.9):
 							print(id_ord[outi],out_[outi])
-					
+
+					print('**********************')
+					# with open('/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/bril_ssbond.txt','r') as ssbond_f:
+					ssbonds_detect = np.load('/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/GLP1R_ssbond.npy')
+					# ssbonds_detect.tolist()
+					rmchr_id_ord = [None for i in range(len(id_ord))]
+					for i in range(len(id_ord)):
+						# rmchr_id_ord[i] = str(filter(str.isdigit,id_ord[i][0])+','+filter(str.isdigit,id_ord[i][1]))
+						rmchr_id_ord[i] = [filter(str.isdigit,id_ord[i][0]),filter(str.isdigit,id_ord[i][1])]
+						
+					# print(rmchr_id_ord[0])
+					# ssbonds_detect = ssbond_f.readline().split()
+					for ssbonds in ssbonds_detect:
+						# print(ssbonds.tolist())
+						# print(int(ssbonds.split(',')[0][1:])-1)
+						# print(int(ssbonds.split(',')[1][:-1])-1)
+						# print(ssbonds,np.argwhere(rmchr_id_ord == ssbonds))
+						# print(ssbonds,out_[np.where(rmchr_id_ord == (int(ssbonds.split(',')[0][1:])-1,int(ssbonds.split(',')[1][:-1])-1))])
+						try:
+							# rmchr_id_ord.index(ssbonds.tolist())
+							# if ssbonds == ['193','233']
+							print(ssbonds,out_[rmchr_id_ord.index(ssbonds.tolist())])
+						except ValueError:
+
+							continue
+						# print(ssbonds,out_[rmchr_id_ord.index(ssbonds.tolist())])
 			
 				step += 1
 			
@@ -186,7 +213,7 @@ def run_training():
 			out_ = sess.run(out,feed_dict={images:data1.reshape((len(data1),144))})
 			count = 0
 			for outi in range(len(out_)):
-				if(out_[outi][1] > out_[outi][0]):
+				if(out_[outi][1] > 0.9):
 					count+=1
 			print(len(data1))
 			print(count)
@@ -246,13 +273,13 @@ if __name__ == '__main__':
 	parser.add_argument(
 		'--Validation_path',
 		type=str,
-		default='/Users/dongxq/Desktop/disulfide/other_set_map/7635_refine_4_full_possible_ssbond_nr.npy',
+		default='/Users/dongxq/Desktop/disulfide/other_set_map/7211_full_possible_ssbond_nr.npy',
 		help='path with the Validation data.'
 	)
 	parser.add_argument(
 		'--Validation_ord_path',
 		type=str,
-		default='/Users/dongxq/Desktop/disulfide/other_set_map/7635_refine_4_possible_ssbond_id_nr.npy',
+		default='/Users/dongxq/Desktop/disulfide/other_set_map/7211_possible_ssbond_id_nr.npy',
 		help='path with the Validation data.'
 	)
 	FLAGS, unparsed = parser.parse_known_args()

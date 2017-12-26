@@ -54,7 +54,7 @@ def ifmolleneq6(pdb, mol_map):
 
 
 # t0 = time.time()
-pdb_list = os.listdir('/Users/dongxq/Desktop/disulfide/test/')
+pdb_list = os.listdir('/Users/dongxq/Desktop/disulfide/pdb_disulfide/')
 print 'pdb numbers',len(pdb_list)
 if pdb_list[0] =='.DS_Store': 
 	pdb_list = pdb_list[1:]
@@ -80,11 +80,11 @@ for pdb in pdb_list:
 	current_ssbond = 0
 	# mol_pos = 5
 
-	with open('/Users/dongxq/Desktop/disulfide/test/%s'%pdb,'r') as f:
-		all_lines = f.readlines()
-		for i in range(len(all_lines)):
-			all_lines[i] = all_lines[i].strip()
-			line_temp = all_lines[i].split()
+	with open('/Users/dongxq/Desktop/disulfide/pdb_disulfide/%s'%pdb,'r') as f:
+		# all_lines = f.readlines()
+		for line in f:
+			lines = line.strip()
+			line_temp = lines.split()
 
 			# firsts = line_temp[2]+line_temp[3]
 			
@@ -99,13 +99,13 @@ for pdb in pdb_list:
 			# 	pdb_ssbond += 1
 			if temp == 'SSBOND':
 				print line_temp
-				if line_temp[4][-1].isalpha():
-					if ord(line_temp[4][-1]) == 65 and ord(line_temp[4][-1]):
-						firstsn0 = line_temp[4][:-1] - 1
-						if 
-						firstsn1 = 
-					print 'alpha'
-					firstsn0 = line_temp[4][:-1] + chr(ord(line_temp[4][-1])-1)
+				# if line_temp[4][-1].isalpha():
+				# 	if ord(line_temp[4][-1]) == 65 and ord(line_temp[4][-1]):
+				# 		firstsn0 = line_temp[4][:-1] - 1
+				# 		if 
+				# 		firstsn1 = 
+				# 	print 'alpha'
+				# 	firstsn0 = line_temp[4][:-1] + chr(ord(line_temp[4][-1])-1)
 
 
 				if line_temp[4][-1] == 'B':
@@ -281,7 +281,7 @@ for pdb in pdb_list:
 						ssbond_mol_map[num][4].append(float(line_temp[6]))
 						ssbond_mol_map[num][4].append(float(line_temp[7]))
 						ssbond_mol_map[num][4].append(float(line_temp[8]))
-					elif ssbond_mol_map[num][4] != [] and line_temp[2] != 'H' and ssbond_mol_map[num][5] == []:
+					elif ssbond_mol_map[num][4] != [] and line_temp[2][0] != 'H' and ssbond_mol_map[num][5] == []:
 						ssbond_mol_map[num][5].append(float(line_temp[6]))
 						ssbond_mol_map[num][5].append(float(line_temp[7]))
 						ssbond_mol_map[num][5].append(float(line_temp[8]))
@@ -304,7 +304,7 @@ for pdb in pdb_list:
 					elif line_temp[2] =='CB' and ssbond_mol_map[num][4] == []:
 						ssbond_mol_map[num][4].append([x,y,z])
 						print ssbond_mol_map[num][4]
-					elif ssbond_mol_map[num][4] != [] and line_temp[2] != 'H' and ssbond_mol_map[num][5] == []:
+					elif ssbond_mol_map[num][4] != [] and line_temp[2][0] != 'H' and ssbond_mol_map[num][5] == []:
 						ssbond_mol_map[num][5].append([x,y,z])
 						print ssbond_mol_map[num][5]
 						# print line_temp
@@ -414,7 +414,7 @@ for pdb in pdb_list:
 				
 nossbond_map = np.array(nossbond_map)
 print nossbond_map
-np.save('nossbonds_map.npy',nossbond_map)
+np.save('refine_H_nossbonds_map.npy',nossbond_map)
 print nossbond_map.shape
 print all_ssbond
 

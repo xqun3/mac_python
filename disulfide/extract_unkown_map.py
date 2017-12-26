@@ -1,9 +1,10 @@
 # -*-coding:utf-8 -*-
+
 ############################################################
-# This python code can extract mutated pdb ssbond_distance 
-# map.
-#
-#
+# This python code can extract raw pdb ssbond_distance 
+# map. It's means that didn't add any mutation.
+# Note, this code is address the problem which the pdb file 
+# less one column.
 #
 #
 #
@@ -19,32 +20,23 @@ import numpy as np
 import sys
 import ssbond_distance_map as sdm
 
-# class ssbond_mol(object):
-# 	"""docstring for ssbond_mol"""
-# 	def __init__(self, ID, N, CA, C, O, CB, SG):
-# 		super(ssbond_mol, self).__init__()
-# 		self.ID = ID
-# 		self.N = N
-# 		self.CA = CA
-# 		self.C = C
-# 		self.O = O
-# 		self.CB = CB
-# 		self.SG = SG
 
 def exmain_mol_list(mol_list,line_temp):
 	if mol_list[0]!=[] and mol_list[1]!=[] and mol_list[2]!=[] and mol_list[3]!=[] and mol_list[4]!=[] and mol_list[5]!=[]:
 		# flag_mol = True
 		# mol_id = line_temp[5]
-		return True,line_temp[5]
+
+		return True,line_temp[3]+line_temp[4]
 	else:
-		return False,line_temp[5]
+		print('no,no mol')
+		return False,line_temp[3]+line_temp[4]
 
 def correct_xyz(line_temp):
 	# print len(line_temp[6]),len(line_temp[7])
-	if len(line_temp[6])-len(line_temp[7]) > 3:
-		pos = 6
+	if len(line_temp[5])-len(line_temp[6]) > 3:
+		pos = 5
 	else:
-		pos = 7
+		pos = 6
 	print(pos)
 	temp = line_temp[pos].split('-')
 	if len(temp) == 1:
@@ -54,7 +46,7 @@ def correct_xyz(line_temp):
 	x=0
 	y=0
 	z=0
-	if pos == 6:
+	if pos == 5:
 		z = float(line_temp[pos+1])
 		if temp[0] == '':
 			x = float('-'+temp[1])
@@ -83,12 +75,19 @@ def find_map_element(filename):
 	mol_type_list = []
 	count = 0
 	lines = f.readlines()
+	break_count = 0
 	for i in range(len(lines)):
 		# line = lines[i]
+		break_count += 1
 		line_temp = lines[i].split()
+		# if break_count == 14:
+		# 	break
 		
 		if line_temp[0] != 'ATOM':
 			continue
+		if line_temp [3] == 'PRO':
+			continue
+		print(lines[i])
 		if line_temp[0] == 'ENDMDL' :
 			break
 		# print(line_temp)
@@ -109,49 +108,52 @@ def find_map_element(filename):
 			# 	wlf.write(str(line_temp) +'\n')
 
 		if line_temp[0] == 'ATOM' and mol_name_temp == None:
-			mol_name_temp = line_temp[3]+line_temp[4]+line_temp[5]
+			mol_name_temp = line_temp[3]+line_temp[4]
 			mol_list = [ [] for i in range(6)]
-		elif line_temp[0] == 'ATOM' and mol_name_temp!=line_temp[3]+line_temp[4]+line_temp[5]:
+		elif line_temp[0] == 'ATOM' and mol_name_temp!=line_temp[3]+line_temp[4]:
 
-			mol_name_temp = line_temp[3]+line_temp[4]+line_temp[5]
+			mol_name_temp = line_temp[3]+line_temp[4]
 			mol_list = [ [] for i in range(6)]
 			# count += 1
 			
-			
-
-		if abs(len(line_temp[6])-len(line_temp[7])) <= 3:
-			# print('hi')
+		if abs(len(line_temp[5])-len(line_temp[6])) <= 3:
+			print('hi')
 			if line_temp[2] == 'N' and mol_list[0] ==[]:
+				mol_list[0].append(float(line_temp[5]))
 				mol_list[0].append(float(line_temp[6]))
 				mol_list[0].append(float(line_temp[7]))
-				mol_list[0].append(float(line_temp[8]))
+				
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 			elif line_temp[2] =='CA' and mol_list[1] == []:
+				mol_list[1].append(float(line_temp[5]))
 				mol_list[1].append(float(line_temp[6]))
 				mol_list[1].append(float(line_temp[7]))
-				mol_list[1].append(float(line_temp[8]))
+				
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 			elif line_temp[2] =='C' and mol_list[2] == []:
+				mol_list[2].append(float(line_temp[5]))
 				mol_list[2].append(float(line_temp[6]))
 				mol_list[2].append(float(line_temp[7]))
-				mol_list[2].append(float(line_temp[8]))
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 			elif line_temp[2] =='O' and mol_list[3] == []:
+				mol_list[3].append(float(line_temp[5]))
 				mol_list[3].append(float(line_temp[6]))
 				mol_list[3].append(float(line_temp[7]))
-				mol_list[3].append(float(line_temp[8]))
+				
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 			elif line_temp[2] =='CB' and mol_list[4] == []:
+				mol_list[4].append(float(line_temp[5]))
 				mol_list[4].append(float(line_temp[6]))
 				mol_list[4].append(float(line_temp[7]))
-				mol_list[4].append(float(line_temp[8]))
+				
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 
-			elif line_temp[2] =='SG' and mol_list[5] == []:
+			elif (line_temp[2] =='SG' or line_temp[2] != 'H') and mol_list[5] == [] and mol_list[4] != []:
 				# print(line_temp[0])
+				mol_list[5].append(float(line_temp[5]))
 				mol_list[5].append(float(line_temp[6]))
 				mol_list[5].append(float(line_temp[7]))
-				mol_list[5].append(float(line_temp[8]))
+				
 				# print('here',mol_list[0]!=[] and mol_list[1]!=[] and mol_list[2]!=[] and mol_list[3]!=[] and mol_list[4]!=[] and mol_list[5]!=[])
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 		else:
@@ -177,19 +179,21 @@ def find_map_element(filename):
 				mol_list[4].append([x,y,z])
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 				# print mol_list[4]
-			elif line_temp[2] == 'SG' and mol_list[5] == []:
+			elif (line_temp[2] =='SG' or line_temp[2] != 'H') and mol_list[5] == [] and mol_list[4] != []:
 				# print(line_temp[0])
 				mol_list[5].append([x,y,z])
 				# print mol_list[5]
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
+				
+		# print(mol_list)
 		# print(flag_mol,line_temp[3]+line_temp[4]+line_temp[5])
 		if flag_mol == True:
 			# print(flag_mol)
 			# print(line_temp[0])
-			print(line_temp[3]+line_temp[4]+line_temp[5])
+			print(line_temp[3]+line_temp[4])
 			mol_map_list.append(mol_list)
 			mol_id_list.append(mol_id)
-			mol_type_list.append(line_temp[3]+line_temp[4]+line_temp[5])
+			mol_type_list.append(line_temp[3]+line_temp[4])
 			flag_mol = False
 			
 			
@@ -275,6 +279,3 @@ if __name__ == '__main__':
 	np.save('%s_possible_ssbond_nr.npy'%name,possible_ssbond)
 	np.save('%s_full_possible_ssbond_nr.npy'%name,full_distance_map)
 	np.save('%s_possible_ssbond_id_nr.npy'%name,possible_ssbond_id)
-
-
-
