@@ -24,13 +24,15 @@ parser.add_argument('--checkpoint_dir', type=str, default='/Users/dongxq/Desktop
 parser.add_argument(
 	'--predict_path',
 	type=str,
-	default='/Users/dongxq/Desktop/disulfide/other_set_map/7635_full_possible_ssbond_nr.npy',
+	# default='/Users/dongxq/Desktop/disulfide/other_set_map/bril272cys_select_ca_full_possible_ssbond_nr.npy',
+	default='/Users/dongxq/Desktop/disulfide/other_test_set/minimize_map/flavo14_93_ca_full_possible_ssbond_nr.npy',
 	help='path with the Validation data.'
 )
 parser.add_argument(
 	'--predict_ord_path',
 	type=str,
-	default='/Users/dongxq/Desktop/disulfide/other_set_map/7635_possible_ssbond_id_nr.npy',
+	# default='/Users/dongxq/Desktop/disulfide/other_set_map/bril272cys_select_ca_possible_ssbond_id_nr.npy',
+	default='/Users/dongxq/Desktop/disulfide/other_test_set/minimize_map/flavo14_93_ca_possible_ssbond_id_nr.npy',
 	help='path with the Validation data id.'
 )
 parser.add_argument(
@@ -38,7 +40,7 @@ parser.add_argument(
 	type=str,
 	# default=os.path.join('/Users/dongxq/Desktop/disulfide/other_set_map','7211_possible_ssbond_id_nr.npy'),
 	
-	default='/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/GLP1R_ssbond.npy',
+	default='/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/flavodoxin_ssbond.npy',#bril_ssbond.npy',
 	help='the mutate pos.'
 )
 parser.add_argument(
@@ -74,13 +76,13 @@ def predict(sess,images,labels,logits,out):
 	with open('/Users/dongxq/Desktop/disulfide/predict/%s.txt'%name, 'w') as wf:
 		for outi in range(len(out_)):
 			# print(id_ord[outi],out_[outi])
-			# if(out_[outi][1] > 0.7):
-			# 	count += 1
-			# 	print(id_ord[outi],out_[outi])
-			wf.write(id_ord[outi])
-			wf.write(':')
-			wf.write(str(out_[outi]))
-			wf.write('\n')
+			if(out_[outi][1] > out_[outi][0]):
+				count += 1
+				print(id_ord[outi],out_[outi])
+			# wf.write(id_ord[outi])
+			# wf.write(':')
+			# wf.write(str(out_[outi]))
+			# wf.write('\n')
 
 	print(count)
 	print('****** The probability of the mutate pos ********')
@@ -115,6 +117,12 @@ def predict(sess,images,labels,logits,out):
 			# 	continue
 	print('finish predict.')
 
+def predict_one_map(sess,images,file,out):
+	data = np.load(file).reshape((-1,144))
+	out_ = sess.run(out,feed_dict={images:data.reshape((len(data),144))})
+	print(out_)
+	# print(tf.argmax(out, 1))
+	
 
 def main(argv=None): 
 	sess=tf.Session() 
@@ -138,6 +146,7 @@ def main(argv=None):
 
 	predict(sess,images,labels,logits,out)
 	# test(sess,images,labels,logits,out)
+	# predict_one_map(sess,images,'/Users/dongxq/Desktop/disulfide/predict_analysis/27_79change5_610.npy',out)
 
 if __name__ == '__main__':
 	FLAGS = parser.parse_args()

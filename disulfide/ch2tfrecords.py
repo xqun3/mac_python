@@ -31,6 +31,7 @@ def splitTestSet(samplelist):
 	small_list = samplelist[-FLAGS.split_size:]
 	big_list = samplelist[:len(samplelist)-FLAGS.split_size]
 	return big_list,small_list
+	
 
 def bind_p_n(positiveSample, negtiveSample):
 	print('length of the positiveSample:{}, length of the negtiveSample:{}'.format(len(positiveSample),len(negtiveSample)))
@@ -64,7 +65,7 @@ def convert_to(data_set, name, labelmark):
 	print('Writing', filename)
 	writer = tf.python_io.TFRecordWriter(filename)
 	for index in range(num_examples):
-		image_raws = data_set[index].reshape(144) #.tolist()
+		image_raws = data_set[index].reshape(100) #.tolist()
 		# for row in data_set[index]:
 		# print(type(image_raws[0]))
 
@@ -89,7 +90,7 @@ def convert_to_shulffle_tfrecord(data_set, name, labelmark):
 	print('Writing', filename)
 	writer = tf.python_io.TFRecordWriter(filename)
 	for index in range(num_examples):
-		image_raws = np.array(shulfflelist[index][0]).reshape(144) #.tolist()
+		image_raws = np.array(shulfflelist[index][0]).reshape(100) #.tolist()
 		# for row in data_set[index]:
 		# print(type(image_raws[0]))
 
@@ -134,19 +135,19 @@ if __name__ == '__main__':
 	parser.add_argument(
 	  '--directory',
 	  type=str,
-	  default='/Users/dongxq/Desktop/disulfide/neuro_input/',
+	  default='/Users/dongxq/Desktop/disulfide/noSG_neuro_input/',
 	  help='Directory to exist positive data files and write the converted result'
 	)
 	parser.add_argument(
 	  '--p_sample',
 	  type=str,
-	  default='full_ssbond_distance_map.npy',
+	  default='pos_noSG_distance_ssbond.npy',
 	  help='Directory to exist negative data files and write the converted result'
 	)
 	parser.add_argument(
 	  '--n_sample',
 	  type=str,
-	  default='full_12496nossbond_distance_map.npy',
+	  default='12496_neg_noSG_distance_ssbond.npy',
 	  help='Directory to exist negative data files and write the converted result'
 	)
 	
@@ -166,14 +167,14 @@ if __name__ == '__main__':
 	  Number of examples to separate from the training data for the validation set.\
 	  """
 	)
-	parser.add_argument(
-	  '--predict_image',
-	  type=str,
-	  default=False,
-	  help="""\
-	  Number of examples to separate from the training data for the validation set.\
-	  """
-	)
+	# parser.add_argument(
+	#   '--predict_image',
+	#   type=str,
+	#   default=False,
+	#   help="""\
+	#   Number of examples to separate from the training data for the validation set.\
+	#   """
+	# )
 
 	FLAGS, unparsed = parser.parse_known_args()
 	tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

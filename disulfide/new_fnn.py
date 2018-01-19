@@ -50,9 +50,7 @@ def fill_feed_dict(images_pl, labels_pl,x,y,sess=None ):
     """
     # Create the feed_dict for the placeholders filled with the next
     # `batch size` examples.
-    # print(FLAGS.num_epochs)
-    # x,y = new_fnn.inputs(train=True, batch_size=FLAGS.batch_size,num_epochs=FLAGS.num_epochs)
-    # print(x,y)
+
     if sess!= None:
         images_feed,labels_feed = sess.run([x,y])
         # print(labels_feed.reshape(len(labels_feed)))

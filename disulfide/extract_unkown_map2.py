@@ -18,7 +18,19 @@ import time
 import numpy as np
 import sys
 import ssbond_distance_map as sdm
+import math
 
+remove_pairs = open('small_ca_remove.txt','w')
+def compare_CA_distance(A_CA,B_CA,nameA,nameB):
+	sumCA = 0
+	for xyz in range(3):
+		sumCA += pow((float(A_CA[xyz])-float(B_CA[xyz])), 2)
+	distance = math.sqrt(sumCA)
+	if 3<distance < 7:
+		return True
+	else:
+		remove_pairs.write(nameA+','+nameB+':'+str(distance) +'\n')
+		return False
 
 def exmain_mol_list(mol_list,line_temp):
 	if mol_list[0]!=[] and mol_list[1]!=[] and mol_list[2]!=[] and mol_list[3]!=[] and mol_list[4]!=[] and mol_list[5]!=[]:
@@ -150,7 +162,7 @@ def find_map_element(filename):
 				
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 
-			elif (line_temp[2] =='SG' or line_temp[2] != 'H') and mol_list[5] == [] and mol_list[4] != []:
+			elif (line_temp[2] =='SG' or line_temp[2][:1] != 'H') and mol_list[5] == [] and mol_list[4] != []:
 				# print(line_temp[0])
 				mol_list[5].append(float(line_temp[6]))
 				mol_list[5].append(float(line_temp[7]))
@@ -181,7 +193,7 @@ def find_map_element(filename):
 				mol_list[4].append([x,y,z])
 				flag_mol,mol_id = exmain_mol_list(mol_list,line_temp)
 				# print mol_list[4]
-			elif (line_temp[2] =='SG' or line_temp[2] != 'H') and mol_list[5] == [] and mol_list[4] != []:
+			elif (line_temp[2] =='SG' or line_temp[2][:1] != 'H') and mol_list[5] == [] and mol_list[4] != []:
 				# print(line_temp[0])
 				mol_list[5].append([x,y,z])
 				# print mol_list[5]
@@ -201,7 +213,7 @@ def find_map_element(filename):
 			
 	print('test',len(mol_map_list),len(mol_id_list))
 	print(mol_id_list)
-	print(mol_type_list)
+	# print(mol_type_list)
 	print(count)
 
 	return mol_map_list,mol_id_list,mol_type_list
@@ -247,11 +259,7 @@ def make_ssbond_without_repeat(map_list, map_id, mol_type_list):
 				continue
 			elif mol_type_list[i][1:] == mol_type_list[j][1:]:
 				continue
-			else:
-				# print(i,j)
-				# a = map_list[i].extend(map_list[j])
-				# print(a)
-				
+			elif compare_CA_distance(map_list[i][1],map_list[j][1],mol_type_list[i],mol_type_list[j]):
 				temp = map_list[i][:]
 				# temp.append(map_list[i])
 				temp.extend(map_list[j])
@@ -260,6 +268,21 @@ def make_ssbond_without_repeat(map_list, map_id, mol_type_list):
 				# print(map_list[i])
 				possible_ssbond.append(temp)
 				possible_ssbond_id.append((map_id[i],map_id[j]))
+			else:
+				continue
+			# else:
+			# 	# print(i,j)
+			# 	# a = map_list[i].extend(map_list[j])
+			# 	# print(a)
+				
+			# 	temp = map_list[i][:]
+			# 	# temp.append(map_list[i])
+			# 	temp.extend(map_list[j])
+			# 	# print(temp)
+			# 	# print('hi')
+			# 	# print(map_list[i])
+			# 	possible_ssbond.append(temp)
+			# 	possible_ssbond_id.append((map_id[i],map_id[j]))
 	return possible_ssbond,possible_ssbond_id
 
 if __name__ == '__main__':
@@ -278,6 +301,6 @@ if __name__ == '__main__':
 
 	full_distance_map = sdm.convert_to_nxn_map(np.array(possible_ssbond))
 	# print(full_distance_map)
-	np.save('%s_possible_ssbond_nr.npy'%name,possible_ssbond)
-	np.save('%s_full_possible_ssbond_nr.npy'%name,full_distance_map)
-	np.save('%s_possible_ssbond_id_nr.npy'%name,possible_ssbond_id)
+	np.save('%s_ca_possible_ssbond_nr.npy'%name,possible_ssbond)
+	np.save('%s_ca_full_possible_ssbond_nr.npy'%name,full_distance_map)
+	np.save('%s_ca_possible_ssbond_id_nr.npy'%name,possible_ssbond_id)

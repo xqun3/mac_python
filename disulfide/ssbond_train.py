@@ -9,7 +9,6 @@ import time
 import numpy as np
 import tensorflow as tf
 import argparse
-import fnn
 import os
 import exceptions
 import new_fnn
