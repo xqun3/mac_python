@@ -121,8 +121,8 @@ def main(unused_argv):
 		# Convert to Examples and write the result to TFRecords.
 		# convert_to(train_dataset, 'train', labelmark)
 		# convert_to(test_dataset, 'test', labelmark)
-		convert_to_shulffle_tfrecord(train_dataset, 'train', labelmark)
-		convert_to_shulffle_tfrecord(test_dataset, 'test', labelmark)
+		convert_to_shulffle_tfrecord(train_dataset, 'nor_train', labelmark)
+		convert_to_shulffle_tfrecord(test_dataset, 'nor_test', labelmark)
 		# convert_to(data_sets.test, 'test')
 	else:
 		print('Only convert images, no label.')
@@ -141,13 +141,13 @@ if __name__ == '__main__':
 	parser.add_argument(
 	  '--p_sample',
 	  type=str,
-	  default='pos_noSG_distance_ssbond.npy',
+	  default='nor_pos_noSG_distance_ssbond.npy',
 	  help='Directory to exist negative data files and write the converted result'
 	)
 	parser.add_argument(
 	  '--n_sample',
 	  type=str,
-	  default='12496_neg_noSG_distance_ssbond.npy',
+	  default='nor_12496_neg_noSG_distance_ssbond.npy',
 	  help='Directory to exist negative data files and write the converted result'
 	)
 	

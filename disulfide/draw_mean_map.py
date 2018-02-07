@@ -20,8 +20,8 @@ def draw_mean(args):
 	pos_mean = np.mean(pos_distance_map, axis=0)
 	neg_mean = np.mean(neg_distance_map, axis=0)
 	# print(mean)
-	pom.draw_map([pos_mean,args[2]])
-	pom.draw_map([neg_mean,args[3]])
+	pom.draw_map([pos_mean,args[2],args[4]])
+	pom.draw_map([neg_mean,args[3],args[4]])
 
 def find_pos_map(args):
 	ssbond = np.load(args[0])
@@ -42,17 +42,17 @@ def draw_all_map(args):
 	for i in range(len(ssbond_id)):
 		ssbond_pos_ord[i] = [filter(str.isdigit,ssbond_id[i][0]),filter(str.isdigit,ssbond_id[i][1])]
 	for mapi in range(ssbond.shape[0]):
-		pom.draw_map([ssbond[mapi],ssbond_pos_ord[mapi]])
+		pom.draw_map([ssbond[mapi],ssbond_pos_ord[mapi],args[2]])
 
 def draw_train_map(args):
 	ssbond = np.load(args[0])
 	for mapi in range(ssbond.shape[0]):
-		pom.draw_map([ssbond[mapi],str(mapi)])
+		pom.draw_map([ssbond[mapi],str(mapi),arg[1]])
 
 if __name__ == '__main__':
 	args = sys.argv[1:]
-	find_pos_map(args)
-	# draw_all_map(args)
+	# find_pos_map(args)
+	draw_all_map(args)
 	# draw_train_map(args)
 	# for i in range()
 	# compare_matrx(args)

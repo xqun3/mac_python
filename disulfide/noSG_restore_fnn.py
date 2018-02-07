@@ -24,14 +24,14 @@ parser.add_argument(
 	'--predict_path',
 	type=str,
 	# default='/Users/dongxq/Desktop/disulfide/other_set_map/bril272cys_select_ca_full_possible_ssbond_nr.npy',
-	default='/Users/dongxq/Desktop/disulfide/noSG_predict_test/flavo_ca_full_noSG_ssbond_nr.npy',
+	default='/Users/dongxq/Desktop/disulfide/noSG_predict_test/brilM_ca_full_noSG_ssbond_nr.npy',
 	help='path with the Validation data.'
 )
 parser.add_argument(
 	'--predict_ord_path',
 	type=str,
 	# default='/Users/dongxq/Desktop/disulfide/other_set_map/bril272cys_select_ca_possible_ssbond_id_nr.npy',
-	default='/Users/dongxq/Desktop/disulfide/noSG_predict_test/flavo_ca_noSG_ssbond_id_nr.npy',
+	default='/Users/dongxq/Desktop/disulfide/noSG_predict_test/brilM_ca_noSG_ssbond_id_nr.npy',
 	help='path with the Validation data id.'
 )
 parser.add_argument(
@@ -39,7 +39,7 @@ parser.add_argument(
 	type=str,
 	# default=os.path.join('/Users/dongxq/Desktop/disulfide/other_set_map','7211_possible_ssbond_id_nr.npy'),
 	
-	default='/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/flavodoxin_ssbond.npy',#bril_ssbond.npy,flavodoxin_ssbond.npy,
+	default='/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/bril_ssbond.npy',#bril_ssbond.npy,GLP1R_ssbond.npy,flavodoxin_ssbond.npy,
 	help='the mutate pos.'
 )
 parser.add_argument(
@@ -83,7 +83,7 @@ def predict(sess,images,labels,logits,out):
 			# wf.write(str(out_[outi]))
 			# wf.write('\n')
 
-	print(count)
+	print(len(id_ord),count)
 	print('****** The probability of the mutate pos ********')
 	mutate_pos_ord = [None for i in range(len(id_ord))]
 	# print(mutate_pos_ord)

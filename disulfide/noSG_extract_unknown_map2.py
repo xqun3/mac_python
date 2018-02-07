@@ -26,7 +26,7 @@ def compare_CA_distance(A_CA,B_CA,nameA,nameB):
 	for xyz in range(3):
 		sumCA += pow((float(A_CA[xyz])-float(B_CA[xyz])), 2)
 	distance = math.sqrt(sumCA)
-	if 3<distance < 7:
+	if distance < 7:
 		return True
 	else:
 		remove_pairs.write(nameA+','+nameB+':'+str(distance) +'\n')
@@ -201,7 +201,7 @@ def find_map_element(filename):
 	print('test',len(mol_map_list),len(mol_id_list))
 	print(mol_id_list)
 	# print(mol_type_list)
-	print(count)
+	# print(count)
 
 	return mol_map_list,mol_id_list,mol_type_list
 
@@ -283,6 +283,7 @@ if __name__ == '__main__':
 	possible_ssbond, possible_ssbond_id = make_ssbond_without_repeat(map_list, map_id, mol_type_list)
 	# possible_ssbond = np.array(possible_ssbond)
 	# possible_ssbond_id = np.array(possible_ssbond_id)
+	# print(possible_ssbond_id)
 	print('****************************')
 	print(len(possible_ssbond[0]),len(possible_ssbond[0]))
 

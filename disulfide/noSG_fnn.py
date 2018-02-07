@@ -18,6 +18,8 @@ IMAGE_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 
 TRAIN_FILE = 'train_shulffle.tfrecords'
 TEST_FILE = 'test_shulffle.tfrecords'
+# TRAIN_FILE = 'nor_train_shulffle.tfrecords'
+# TEST_FILE = 'nor_test_shulffle.tfrecords'
 
 parser = argparse.ArgumentParser()
 

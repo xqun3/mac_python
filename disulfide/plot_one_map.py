@@ -7,9 +7,11 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
+import os
+
 # label = ['N','CA','C','O','CB','SG','N','CA','C','O','CB','SG']
 label = ['N','CA','C','O','CB','N','CA','C','O','CB']
-
+root_path = '/Users/dongxq/Desktop/disulfide/'
 def draw_map(args):
 	if type(args[0]) == str:
 		file = np.load(args[0])
@@ -28,7 +30,13 @@ def draw_map(args):
 	plt.yticks(range(len(label)), label, size='small')
 	plt.colorbar();
 	# plt.savefig('/Users/dongxq/Desktop/disulfide/ssbond_map_image/neg_image/%s.png'%name,bbox_inches='tight')
-	plt.savefig('/Users/dongxq/Desktop/disulfide/noSG_predict_analysis/%s.png'%name,bbox_inches='tight')
+	if os.path.exists(root_path+ args[2]):
+		# print('true')
+		plt.savefig(root_path+ args[2]+'/%s.png'%name,bbox_inches='tight')
+	else:
+		os.makedirs(root_path+ args[2])
+		plt.savefig(root_path+ args[2]+'/%s.png'%name,bbox_inches='tight')
+	
 
 def draw_compare_map(args):
 	change_map = np.load(args[0])
