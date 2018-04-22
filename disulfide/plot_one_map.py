@@ -36,7 +36,37 @@ def draw_map(args):
 	else:
 		os.makedirs(root_path+ args[2])
 		plt.savefig(root_path+ args[2]+'/%s.png'%name,bbox_inches='tight')
-	
+
+def draw_mean_map(args):
+	if type(args[0]) == str:
+		file = np.load(args[0])
+	else:
+		file = args[0]
+	if type(args[1]) == list:
+		name = args[1][0] + '_' + args[1][1]
+	else:
+		name = args[1]
+
+	# print(type(file[0]))
+	mean_image = np.zeros_like(file[0]) 
+
+	for i in range(len(file)):
+		mean_image += file[i]
+	plt.figure()
+	plt.title('%s'%name)
+	# ssbond_distance_map = ssd.squareform(ten_map[i]) 
+	plt.style.use('classic')
+	plt.imshow(mean_image/float(len(file)))
+	plt.xticks(range(len(label)), label, size='small')
+	plt.yticks(range(len(label)), label, size='small')
+	plt.colorbar();
+	# plt.savefig('/Users/dongxq/Desktop/disulfide/ssbond_map_image/neg_image/%s.png'%name,bbox_inches='tight')
+	if os.path.exists(root_path+ args[2]):
+		# print('true')
+		plt.savefig(root_path+ args[2]+'/%s.png'%name,bbox_inches='tight')
+	else:
+		os.makedirs(root_path+ args[2])
+		plt.savefig(root_path+ args[2]+'/%s.png'%name,bbox_inches='tight')
 
 def draw_compare_map(args):
 	change_map = np.load(args[0])
@@ -68,6 +98,6 @@ def draw_compare_map(args):
 if __name__ == '__main__':
 
 	args = sys.argv[1:]
-	draw_map(args)
+	draw_mean_map(args)
 	
 	# draw_compare_map(args)

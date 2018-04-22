@@ -91,23 +91,10 @@ for pdb in pdb_list:
 			
 			temp = line_temp[0]
 			if (temp != 'SSBOND') and (temp != 'ATOM'):
-				# print temp,
 				continue
-			# if flag and temp == 'SSBOND':
-			# 	# print 'ssbond'
-			# 	flag = False
-			# 	pdb_ssbond += 1
+
 			if temp == 'SSBOND':
 				print line_temp
-				# if line_temp[4][-1].isalpha():
-				# 	if ord(line_temp[4][-1]) == 65 and ord(line_temp[4][-1]):
-				# 		firstsn0 = line_temp[4][:-1] - 1
-				# 		if 
-				# 		firstsn1 = 
-				# 	print 'alpha'
-				# 	firstsn0 = line_temp[4][:-1] + chr(ord(line_temp[4][-1])-1)
-
-
 				if line_temp[4][-1] == 'B':
 					firstsn0 = line_temp[4][:-1]+'A'
 					# print 'first mol',firstsn0
@@ -239,24 +226,7 @@ for pdb in pdb_list:
 					else:	
 						x,y,z=correct_xyz(line_temp)
 						CA_list[a2][a3]=[x,y,z]
-				# if line_temp[2] == 'CA' or line_temp[2] == 'N' or line_temp[2] == 'C' or line_temp[2] == 'O' or line_temp[2] == 'CB' or line_temp[2] == 'CG' or line_temp[2] == 'CG1' :
-				# 	if line_temp[2] == 'CA':
-				# 		mol_list[num][0] = True
-				# 	elif line_temp[2] == 'N':
-				# 		mol_list[num][1] = True
-				# 	elif line_temp[2] == 'C':
-				# 		mol_list[num][2] = True
-				# 	elif line_temp[2] == 'O':
-				# 		mol_list[num][3] = True
-				# 	elif line_temp[2] == 'CB':
-				# 		mol_list[num][4] = True
-				# 	elif line_temp[2] == 'SG' or line_temp[2] == 'CG1':
-				# 		mol_list[num][5] = True
-				# 		with open('without_CG.txt','a') as wwcg:
-				# 			wwcg.write('pdb name :' + pdb + '  line_temp :  '+ line_temp[mol_pos-1]+line_temp[mol_pos] + '\n')
-				# 	# elif line_temp[2] == 'CG1':
-				# 	# 	mol_list[num][6] = True
-				# 	print line_temp[mol_pos+1],line_temp[mol_pos+2],line_temp[mol_pos+3]
+
 				if abs(len(line_temp[6])-len(line_temp[7])) <= 3:
 					# print line_temp
 					if line_temp[2] == 'N' and ssbond_mol_map[num][0] ==[]:
@@ -307,17 +277,7 @@ for pdb in pdb_list:
 					elif ssbond_mol_map[num][4] != [] and line_temp[2][0] != 'H' and ssbond_mol_map[num][5] == []:
 						ssbond_mol_map[num][5].append([x,y,z])
 						print ssbond_mol_map[num][5]
-						# print line_temp
-						# ssbond_mol_map[num].append(x)
-						# ssbond_mol_map[num].append(y)
-						# ssbond_mol_map[num].append(z)
-					# print '********************'
-					
 
-				# print map_index
-				# xyz_count[map_index] += 1
-				# print line_temp
-				# print len(search_list)
 			if temp == 'ENDMDL' :
 				break
 		for i in range(len(ssbond_mol_map)):
@@ -378,13 +338,6 @@ for pdb in pdb_list:
 			b3 = min2Distance/2 #mol near the first mol in the ssbond,second min
 			b4 = min2Distance%2 + 2 #mol near the second mol in the ssbond.second min
 
-			# print 'b1',b1
-			# print 'b2',b2
-			# print ssbond_mol_map
-			# print i*4+b1
-			# print ssbond_mol_map[i*4+b1]
-			# print ssbond_mol_map[i*4+b2]
-			# print ssbond_mol_map[i*4+b1]+ssbond_mol_map[i*4+b2]
 
 			if ifmolleneq6(pdb,ssbond_mol_map[i*4+b1]) and ifmolleneq6(pdb,ssbond_mol_map[i*4+b2]):
 				with open('build_disufide.txt','a') as wdf:

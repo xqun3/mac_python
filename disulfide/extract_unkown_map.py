@@ -285,18 +285,20 @@ if __name__ == '__main__':
 	args = sys.argv[1:]
 	# print(args)
 	filename = args[0]
-	name = args[0].split('/')[-1].split('.')[0]
-	map_list, map_id ,mol_type_list= find_map_element(filename)
+	# name = args[0].split('/')[-1].split('.')[0]
+	# map_list, map_id ,mol_type_list= find_map_element(filename)
 
-	print('length of the map_list',len(map_list))
-	possible_ssbond, possible_ssbond_id = make_ssbond_without_repeat(map_list, map_id, mol_type_list)
-	# possible_ssbond = np.array(possible_ssbond)
-	# possible_ssbond_id = np.array(possible_ssbond_id)
-	print('****************************')
-	print(len(possible_ssbond[0]),len(possible_ssbond[0]))
+	# print('length of the map_list',len(map_list))
+	# possible_ssbond, possible_ssbond_id = make_ssbond_without_repeat(map_list, map_id, mol_type_list)
+	# # possible_ssbond = np.array(possible_ssbond)
+	# # possible_ssbond_id = np.array(possible_ssbond_id)
+	# print('****************************')
+	# print(len(possible_ssbond[0]),len(possible_ssbond[0]))
 
-	full_distance_map = sdm.convert_to_nxn_map(np.array(possible_ssbond))
-	# print(full_distance_map)
-	np.save('%s_ca_possible_ssbond_nr.npy'%name,possible_ssbond)
-	np.save('%s_ca_full_possible_ssbond_nr.npy'%name,full_distance_map)
-	np.save('%s_ca_possible_ssbond_id_nr.npy'%name,possible_ssbond_id)
+	# full_distance_map = sdm.convert_to_nxn_map(np.array(possible_ssbond))
+	# # print(full_distance_map)
+	# np.save('%s_ca_possible_ssbond_nr.npy'%name,possible_ssbond)
+	# np.save('%s_ca_full_possible_ssbond_nr.npy'%name,full_distance_map)
+	# np.save('%s_ca_possible_ssbond_id_nr.npy'%name,possible_ssbond_id)
+
+	

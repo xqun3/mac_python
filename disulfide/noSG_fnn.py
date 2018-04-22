@@ -136,6 +136,20 @@ def inputs(train, batch_size, num_epochs):
     if not num_epochs: num_epochs = None
     filename = os.path.join(FLAGS.data_dir,TRAIN_FILE if train else TEST_FILE)
     print(filename)
+    if train == False:
+        with tf.name_scope('input_test'):
+            filename_queue = tf.train.string_input_producer([filename],num_epochs=1, shuffle=False)
+
+            # Even when reading in multiple threads, share the filename
+            # queue.
+            image, label = read_and_decode(filename_queue)
+            # Shuffle the examples and collect them into batch_size batches.
+            # (Internally uses a RandomShuffleQueue.)
+            # We run this in two threads to avoid being a bottleneck.
+            images, sparse_labels = tf.train.shuffle_batch(
+                [image, label], batch_size=3000, num_threads=2,capacity=1000 + 3 * batch_size,min_after_dequeue=1000)
+            # print(image)
+        return images, sparse_labels
     with tf.name_scope('input'):
         filename_queue = tf.train.string_input_producer([filename],num_epochs=num_epochs)
 
@@ -150,6 +164,7 @@ def inputs(train, batch_size, num_epochs):
             capacity=1000 + 3 * batch_size,
             # Ensures a minimum amount of shuffling of examples.
             min_after_dequeue=1000)
+
         # print images, sparse_labels
 
     return images, sparse_labels

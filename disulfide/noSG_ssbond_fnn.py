@@ -12,7 +12,11 @@ import argparse
 import os
 import exceptions
 import noSG_fnn
-
+from sklearn.metrics import precision_recall_curve
+import matplotlib.pyplot as plt
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_auc_score
 
 FLAGS = None
 
@@ -35,6 +39,12 @@ parser.add_argument(
 	default=128,
 	help='Number of units in hidden layer 1.'
 )
+# parser.add_argument(
+# 	'--hidden2',
+# 	type=int,
+# 	default=64,
+# 	help='Number of units in hidden layer 2.'
+# )
 parser.add_argument(
 	'--hidden2',
 	type=int,
@@ -51,7 +61,7 @@ parser.add_argument(
 	'--log_dir',
 	type=str,
 	default=os.path.join(os.getenv('TEST_TMPDIR', '/Users/dongxq/Desktop/disulfide'),
-	                   'noSG_new_train/logs/'),
+	                   'noSG_train_test/logs/'),
 	help='Directory to put the log data.'
  )
 parser.add_argument(
@@ -73,7 +83,48 @@ parser.add_argument(
 # 	help='path with the Validation data.'
 # )
 
+def draw_P_R_curve(images_placeholder,labels_placeholder, x_test,y_test,sess,loss,accuracy,one_hot_labels,out):
+	feed_dict = noSG_fnn.fill_feed_dict(images_placeholder,labels_placeholder, x_test,y_test,sess=sess)
+	test_loss,accuracy_,testlabel,out_= sess.run([loss,accuracy,one_hot_labels,out],feed_dict=feed_dict)
+	print('testSet: test loss  = %.2f ,accuracy:%.2f'% (test_loss, accuracy_))
+	testlabel = sess.run(tf.argmax(testlabel, 1))
+	# print(out_)
+	new_out_ = out_[:,1]
+	# print('******************************')
+	# print(new_out_)
+	average_precision = average_precision_score(testlabel, new_out_)
+	precision, recall, _ = precision_recall_curve(testlabel, new_out_)
+	plt.step(recall, precision, color='b', alpha=0.2, where='post')
+	plt.fill_between(recall, precision, step='post', alpha=0.2, color='b')
 
+	plt.xlabel('Recall')
+	plt.ylabel('Precision')
+	plt.ylim([0.0, 1.05])
+	plt.xlim([0.0, 1.0])
+	plt.title('2-class Precision-Recall curve: AUC={0:0.2f}'.format(average_precision))
+	plt.show()
+
+def draw_ROC_curve(images_placeholder,labels_placeholder, x_test,y_test,sess,loss,accuracy,one_hot_labels,out):
+	feed_dict = noSG_fnn.fill_feed_dict(images_placeholder,labels_placeholder, x_test,y_test,sess=sess)
+	test_loss,accuracy_,testlabel,out_= sess.run([loss,accuracy,one_hot_labels,out],feed_dict=feed_dict)
+	print('testSet: test loss  = %.2f ,accuracy:%.2f'% (test_loss, accuracy_))
+	fpr, tpr, thresholds = roc_curve(testlabel[:,1], out_[:,1])
+	roc_auc = auc(fpr, tpr)
+	print(thresholds)
+	print(len(thresholds))
+	print(roc_auc_score(testlabel[:,1], out_[:,1]))
+	plt.figure()
+	lw = 2
+	plt.plot(fpr, tpr, color='darkorange',
+	         lw=lw, label='ROC curve (area = %0.4f)' % roc_auc)
+	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Test set receiver operating characteristic')
+	plt.legend(loc="lower right")
+	plt.show()
 def run_training():
 	
 	with tf.Graph().as_default():
@@ -121,22 +172,15 @@ def run_training():
 		one_hot_labels = tf.one_hot(labels_placeholder,axis=-1,depth=2)
 
 		correct_prediction = tf.equal(tf.argmax(out, 1), tf.argmax(one_hot_labels, 1))
+
 		correct_prediction = tf.cast(correct_prediction, tf.float32)
+		print(correct_prediction)
 		accuracy = tf.reduce_mean(correct_prediction)
 
 		try:
 			step = 0
 			while not coord.should_stop():
 				start_time = time.time()
-				# Run one step of the model.  The return values are
-				# the activations from the `train_op` (which is
-				# discarded) and the `loss` op.  To inspect the values
-				# of your ops or variables, you may include them in
-				# the list passed to sess.run() and the value tensors
-				# will be returned in the tuple from the call.
-				# feed_dict = fill_feed_dict(sess,images_placeholder,labels_placeholder)
-				# y_=y_.reshape((100))
-				#x,y = new_fnn.inputs(train=True, batch_size=FLAGS.batch_size,num_epochs=FLAGS.num_epochs)
 				
 				feed_dict=noSG_fnn.fill_feed_dict(images_placeholder,
 					labels_placeholder,x,y,sess=sess)
@@ -151,17 +195,20 @@ def run_training():
 					print('Step %d: loss = %.2f (%.3f sec)' % (step, loss_value, duration))
 					checkpoint_file = os.path.join(FLAGS.log_dir, 'model.ckpt')
 					saver.save(sess, checkpoint_file, global_step=step)
-					for testi in range(30):
-						feed_dict = noSG_fnn.fill_feed_dict(images_placeholder,labels_placeholder,
-							x_test,y_test,sess=sess)
-						test_loss,accuracy_,abcd_,out_= sess.run([loss,accuracy,one_hot_labels,out],
-							feed_dict=feed_dict)
-						print('Step %d: test loss  = %.2f (%3f sec),accuracy:%.2f'% (testi, test_loss,
-							duration,accuracy_))
+					# for testi in range(30):
+					# 	feed_dict = noSG_fnn.fill_feed_dict(images_placeholder,labels_placeholder,
+					# 		x_test,y_test,sess=sess)
+					# 	test_loss,accuracy_,abcd_,out_= sess.run([loss,accuracy,one_hot_labels,out],
+					# 		feed_dict=feed_dict)
+					# 	print('Step %d: test loss  = %.2f (%3f sec),accuracy:%.2f'% (testi, test_loss,
+					# 		duration,accuracy_))
 				step += 1				
 		except tf.errors.OutOfRangeError:
 			print('Done training for %d epochs, %d steps.' % (FLAGS.num_epochs, step))
 		finally:
+			# draw_P_R_curve(images_placeholder,labels_placeholder, x_test,y_test,sess,loss,accuracy,one_hot_labels,out)
+			draw_ROC_curve(images_placeholder,labels_placeholder, x_test,y_test,sess,loss,accuracy,one_hot_labels,out)
+
 			# When done, ask the threads to stop.
 			checkpoint_file = os.path.join(FLAGS.log_dir, 'model.ckpt')
 			saver.save(sess, checkpoint_file, global_step=step)

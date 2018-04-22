@@ -26,7 +26,7 @@ def compare_CA_distance(A_CA,B_CA,nameA,nameB):
 	for xyz in range(3):
 		sumCA += pow((float(A_CA[xyz])-float(B_CA[xyz])), 2)
 	distance = math.sqrt(sumCA)
-	if distance < 7:
+	if 3<distance < 7:
 		return True
 	else:
 		remove_pairs.write(nameA+','+nameB+':'+str(distance) +'\n')

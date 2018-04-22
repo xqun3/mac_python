@@ -12,12 +12,21 @@ import argparse
 import os
 import exceptions
 import noSG_fnn
+from sklearn.metrics import precision_recall_curve
+import matplotlib.pyplot as plt
+from sklearn.metrics import average_precision_score
+import operator
+from collections import OrderedDict
+import json
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_auc_score
 
 parser = noSG_fnn.parser
 
 parser.add_argument('--test_path', type=str, default='/Users/dongxq/Desktop/disulfide/validation_ssbond/val_neg_noSG_distance_ssbond_.npy',
                     help='Directory where to write event logs.')
-parser.add_argument('--checkpoint_dir', type=str, default='/Users/dongxq/Desktop/disulfide/noSG_new_train/logs/',
+parser.add_argument('--checkpoint_dir', type=str, default='/Users/dongxq/Desktop/disulfide/noSG_train_test/logs/',
                     help='Directory where to read model checkpoints.')
 
 parser.add_argument(
@@ -48,6 +57,60 @@ parser.add_argument(
 	# default=False,
 	help='path with the Validation data.'
 )
+FLAGS = parser.parse_args()
+
+def draw_ROC_curve(y_label,y_score):
+
+	fpr, tpr, thresholds = roc_curve(y_label, y_score)
+	roc_auc = auc(fpr, tpr)
+	print(thresholds)
+	print(len(thresholds))
+	print(roc_auc_score(y_label, y_score))
+	plt.figure()
+	lw = 2
+	plt.plot(fpr, tpr, color='darkorange',
+	         lw=lw, label='ROC curve (area = %0.4f)' % roc_auc)
+	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Bril receiver operating characteristic')
+	plt.legend(loc="lower right")
+	plt.show()
+
+def record_mutate_pos(dict_result):
+	# ssbonds_detect = np.load('/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/bril_dict.npy')#flavodoxin_ssbond.npy
+	with open("/Users/dongxq/Desktop/disulfide/other_test_set/mutational_structrue_bril_flavodoxin/bril_dict_new.json",'r') as load_f:
+	   ssbonds_detect = json.load(load_f)
+	print(ssbonds_detect)
+	print(sys.getdefaultencoding())
+	
+	print(ssbonds_detect['16-29'])
+	k = 1
+	rank_dict = {}
+	label_socre = []
+	# print ssbonds_detect
+	for item in dict_result:
+		k += 1;
+		# print(item)
+		temp = item.split('-')
+
+		temp_list = (str(filter(str.isdigit,temp[0]))+'-'+str(filter(str.isdigit,temp[1]))).decode('utf8')
+		# print(temp_list)
+		if temp_list in ssbonds_detect.keys():
+			print(repr(temp_list))
+			# rank_dict[item] = str(float('%.3f'% (k/float(len(dict_result))))*100) + '%'
+			rank_dict[temp_list] = dict_result[item]
+			label_socre.append([ssbonds_detect[temp_list],dict_result[item]])
+
+	# draw_ROC_curve()
+	new_label_socre = np.array(label_socre)
+	# print(label_socre)
+	print(new_label_socre[:,1])
+	draw_ROC_curve(new_label_socre[:,0],new_label_socre[:,1])
+	# print(rank_dict)
+	# print(ssbonds_detect)
 
 def test(sess,images,labels,logits,out):
 	data = np.load(FLAGS.test_path).reshape((-1,100))
@@ -72,12 +135,17 @@ def predict(sess,images,labels,logits,out):
 	out_ = sess.run(out,feed_dict={images:data.reshape((len(data),100))})
 	id_ord = np.load(FLAGS.predict_ord_path)
 	count = 0
+	result_dict = {}
+	# result_dict1 = {}
+
 	with open('/Users/dongxq/Desktop/disulfide/predict/%s.txt'%name, 'w') as wf:
 		for outi in range(len(out_)):
 			# print(id_ord[outi],out_[outi])
 			if(out_[outi][1] > out_[outi][0]):
 				count += 1
 				print(id_ord[outi],out_[outi])
+				result_dict[id_ord[outi][0]+'-'+id_ord[outi][1]] = out_[outi][1]
+				# result_dict1.setdefault(key，[]).append(value)
 			# wf.write(id_ord[outi])
 			# wf.write(':')
 			# wf.write(str(out_[outi]))
@@ -116,6 +184,18 @@ def predict(sess,images,labels,logits,out):
 			# 	continue
 	print('finish predict.')
 
+	sorted_result_dict = sorted(result_dict.iteritems(), key=operator.itemgetter(1), reverse=True)  
+	final_dict = OrderedDict()
+
+	for item in sorted_result_dict:
+		# print item[0],item[1]
+		final_dict[item[0]] = item[1]
+
+	# print(result_dict)
+	# print(final_dict)
+	record_mutate_pos(final_dict)
+	return result_dict
+
 def predict_one_map(sess,images,file,out):
 	data = np.load(file).reshape((-1,100))
 	out_ = sess.run(out,feed_dict={images:data.reshape((len(data),100))})
@@ -124,6 +204,7 @@ def predict_one_map(sess,images,file,out):
 	
 
 def main(argv=None): 
+	# print(FLAGS)
 	sess=tf.Session() 
 	
 	ckpt = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
@@ -143,10 +224,12 @@ def main(argv=None):
 	# logits = new_fnn.inference(images, 128, 32)
 	out=tf.nn.softmax(logits=logits)
 
-	predict(sess,images,labels,logits,out)
+	result_dict = predict(sess,images,labels,logits,out)
+	# return result_dict
 	# test(sess,images,labels,logits,out)
+
 	# predict_one_map(sess,images,'/Users/dongxq/Desktop/disulfide/predict_analysis/27_79change5_610.npy',out)
 
 if __name__ == '__main__':
-	FLAGS = parser.parse_args()
+	
 	tf.app.run()

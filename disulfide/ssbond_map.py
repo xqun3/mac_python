@@ -52,7 +52,7 @@ def correct_xyz(line_temp,mol_pos):
 
 
 t0 = time.time()
-pdb_list = os.listdir('/Users/dongxq/Desktop/disulfide/validation_set/')
+pdb_list = os.listdir('/Users/dongxq/Desktop/disulfide/pdb_disulfide/')
 
 print len(pdb_list)
 if pdb_list[0] =='.DS_Store':
@@ -81,7 +81,7 @@ for pdb in pdb_list:
 	ssbond_map = []
 	new_list = []
 	print pdb
-	with open('/Users/dongxq/Desktop/disulfide/validation_set/%s'%pdb,'r') as f:
+	with open('/Users/dongxq/Desktop/disulfide/pdb_disulfide/%s'%pdb,'r') as f:
 		for line in f:
 			line = line.strip()
 			line_temp = line.split()
@@ -91,18 +91,8 @@ for pdb in pdb_list:
 				temp = line_temp[0]
 			except IndexError:
 				print 'pdb name: ',pdb
-			# A = (temp != 'SSBOND')
-			# # print A
-			# B = (temp != 'ATOM')
-			# # print B
-			# if A or B:#temp != 'SSBOND' or 
-			# 	# print A,B
-			# 	# print count,temp
-			# 	continue
-			# print temp
 
 			if (temp != 'SSBOND') and (temp != 'ATOM'):
-				# print temp,
 				continue
 			if flag and temp == 'SSBOND':
 				# print 'ssbond'
@@ -147,12 +137,6 @@ for pdb in pdb_list:
 					search_mol = search_mol[1:]
 					# print search_mol
 				map_index = search_list.index(search_mol)
-				
-
-				# print map_index
-				# xyz_count[map_index] += 1
-				# print line_temp
-				# print len(search_list)
 				
 				if abs(len(line_temp[mol_pos+1])-len(line_temp[mol_pos+2])) <= 3:
 					if line_temp[2] == 'N' and ssbond_map[map_index][0] == []:
@@ -299,7 +283,7 @@ for i in range(len(ssbonds_map)):
 		break
 # ssbonds_map = ssbonds_map.reshape(len(ssbonds_map),12,3)
 # print ssbonds_map
-np.save('ssbonds_map.npy',ssbonds_map)
+np.save('/Users/dongxq/Desktop/disulfide//ssbonds_map.npy',ssbonds_map)
 print 'there are %d pdb has ssbond'%pdb_ssbond
 print 'there are %d ssbond in all pdb'%all_ssbond
 t1 = time.time()

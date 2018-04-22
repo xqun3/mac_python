@@ -74,9 +74,10 @@ def convert_to_nxn_map(ssbonds_map):
 if __name__ == '__main__':
 	args = sys.argv[1:]
 	filename = args[0]
+
 	name = args[0].split('/')[-1].split('.')[0]
-	root_path = '/Users/dongxq/Desktop/disulfide/new-nossbond-map/'
+	root_path = '/Users/dongxq/Desktop/disulfide/checkCA/'
 	ssbonds_map = np.load(root_path + name + '.npy')
 	ssbonds_distance_map = convert_to_nxn_map(ssbonds_map)
 	print(len(ssbonds_distance_map))
-	np.save('%s_distance.npy'%name,ssbonds_distance_map)
+	np.save(root_path+'%s_distance.npy'%name,ssbonds_distance_map)

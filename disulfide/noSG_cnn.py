@@ -36,31 +36,17 @@ parser.add_argument(
 	'--data_dir', 
 	type=str, 
 	default='/Users/dongxq/Desktop/disulfide/noSG_neuro_input/',
-	help='Path to the CIFAR-10 data directory.'
+	help='Path to the training data directory.'
 	)
 parser.add_argument(
     '--num_epochs',
     type=int,
-    default=60,
+    default=10,
     help='Number of epochs to run trainer.'
 	)
 FLAGS = parser.parse_args()
 
 def fill_feed_dict(images_pl, labels_pl,x,y,sess=None ):
-    """Fills the feed_dict for training the given step.
-    A feed_dict takes the form of:
-    feed_dict = {
-      <placeholder>: <tensor of values to be passed for placeholder>,
-    }
-    Args:
-    data_set: The set of images and labels, from input_data.read_data_sets()
-    images_pl: The images placeholder, from placeholder_inputs().
-    labels_pl: The labels placeholder, from placeholder_inputs().
-    Returns:
-    feed_dict: The feed dictionary mapping from placeholders to values.
-    """
-    # Create the feed_dict for the placeholders filled with the next
-    # `batch size` examples.
 
     if sess!= None:
         images_feed,labels_feed = sess.run([x,y])
@@ -72,7 +58,7 @@ def fill_feed_dict(images_pl, labels_pl,x,y,sess=None ):
             labels_pl: labels_feed.reshape((len(labels_feed))),
         }
     else:
-    	x = np.reshape(x,(len(x),12,12,1))
+    	x = np.reshape(x,(len(x),10,10,1))
     	print('x',x.shape)
 
         feed_dict = {
@@ -86,18 +72,7 @@ def fill_feed_dict(images_pl, labels_pl,x,y,sess=None ):
 
 
 def _variable_with_weight_decay(name, shape, stddev, wd):
-  """Helper to create an initialized Variable with weight decay.
-  Note that the Variable is initialized with a truncated normal distribution.
-  A weight decay is added only if one is specified.
-  Args:
-    name: name of the variable
-    shape: list of ints
-    stddev: standard deviation of a truncated Gaussian
-    wd: add L2Loss weight decay multiplied by this float. If None, weight
-        decay is not added for this Variable.
-  Returns:
-    Variable Tensor
-  """
+
   dtype = tf.float32
   var = _variable_on_cpu(
       name,
@@ -194,7 +169,7 @@ def inputs(train, batch_size, num_epochs):
     return images, sparse_labels
 
 def inference(images):
-	"""Build the CIFAR-10 model.
+	"""Build the cnn model.
 	Args:
 	images: Images returned from distorted_inputs() or inputs().
 	Returns:
