@@ -19,7 +19,7 @@ parser = noSG_cnn.parser
 parser.add_argument(
 	'--learning_rate',
 	type=float,
-	default=0.005,
+	default=0.01,
 	help='Initial learning rate.'
 )
 
